@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+}
+
+group 'net.orekyuu'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    compile 'mysql:mysql-connector-java:6.0.6'
+    compile 'com.github.orekyuu.moco-framework:chou:release-0.0.1'
+}
+
+// コードの生成先をsrcDirに追加
+sourceSets {
+    main {
+        java {
+            srcDir "${buildDir}/generated"
+        }
+    }
+}
+
+compileJava {
+    // コンパイルのたびに生成し直す
+    doFirst {
+        delete "${buildDir}/generated"
+        mkdir "${buildDir}/generated"
+    }
+    // デフォルトだとpluggable annotation processorが無効になっているので有効化
+    // 生成先はbuild/generated以下にする
+    options.compilerArgs += ['-s', "${buildDir}/generated"]
+}
