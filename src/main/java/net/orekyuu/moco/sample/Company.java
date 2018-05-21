@@ -4,17 +4,18 @@ import net.orekyuu.moco.core.annotations.Column;
 import net.orekyuu.moco.core.annotations.HasMany;
 import net.orekyuu.moco.core.annotations.Table;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "companies")
 public class Company {
-    @Column(name = "id", unique = true, generatedValue = true)
+
+    @Column(name = "id", generatedValue = true, unique = true)
     private int id;
     @Column(name = "name", unique = true)
     private String name;
-    @HasMany(foreignKey = "company_id", key = "id")
-    private List<Employee> employees = new ArrayList<>();
+
+    @HasMany(key = "id", foreignKey = "company_id")
+    private List<Customer> customers;
 
     public Company() {
     }
@@ -31,7 +32,16 @@ public class Company {
         return name;
     }
 
-    public List<Employee> getEmployees() {
-        return employees;
+    public List<Customer> getCustomers() {
+        return customers;
+    }
+
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Company{");
+        sb.append("id=").append(id);
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", customers=").append(customers);
+        sb.append('}');
+        return sb.toString();
     }
 }
