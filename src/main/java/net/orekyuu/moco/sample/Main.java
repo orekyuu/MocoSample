@@ -7,13 +7,38 @@ import org.sqlite.SQLiteDataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
         setup();
         transaction(() -> {
-            // sample code.
+            // amozon
             Companies.findByName("amozon", Companies.COMPANY_TO_CUSTOMERS).ifPresent(System.out::println);
+
+            // Tokyoに住んでいる顧客
+            List<Customer> tokyoCustomers = Customers.all().where(Customers.CITY.eq("Tokyo")).toList();
+            System.out.println(tokyoCustomers);
+
+            // noteを買ったOrder一覧
+            List<Order> noteOrders = LineItems.all()
+                    .where(LineItems.NAME.eq("note"))
+                    .preload(LineItems.LINE_ITEM_TO_ORDER)
+                    .stream()
+                    .map(LineItem::getOrder)
+                    .collect(Collectors.toList());
+            System.out.println(noteOrders);
+
+            // penを最もたくさん買っている人を探す
+            Optional<Order> order = LineItems.all()
+                    .preload(LineItems.LINE_ITEM_TO_ORDER)
+                    .where(LineItems.NAME.eq("pen"))
+                    .order(LineItems.AMOUNT.desc())
+                    .limit(1)
+                    .first().map(LineItem::getOrder);
+            Optional<Customer> customerOpt = order.flatMap(o -> Orders.findById(o.getId(), Orders.ORDER_TO_CUSTOMER).map(Order::getCustomer));
+            customerOpt.ifPresent(System.out::println);
         });
     }
 
