@@ -39,6 +39,12 @@ public class Main {
                     .first().map(LineItem::getOrder);
             Optional<Customer> customerOpt = order.flatMap(o -> Orders.findById(o.getId(), Orders.ORDER_TO_CUSTOMER).map(Order::getCustomer));
             customerOpt.ifPresent(System.out::println);
+
+            // eraserを削除
+            LineItems.all().where(LineItems.NAME.eq("eraser")).delete();
+
+            // penをpen -> Pen, amount -> 100にする
+            LineItems.all().where(LineItems.NAME.eq("pen")).update(LineItems.NAME.set("Pen"), LineItems.AMOUNT.set(100));
         });
     }
 
